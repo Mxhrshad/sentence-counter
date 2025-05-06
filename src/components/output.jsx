@@ -1,10 +1,50 @@
 export default function Output({ paragraph }) {
+
     const countSentences = (text) => {
         if (!text) return 0;
-        const sentenceRegex = /[.!?](\s|$)/g;
-        const matches = text.match(sentenceRegex);
+    
+        const detectLanguage = (text) => {
+            const faSigns = /[آ-ی]/;
+            const enSigns = /[a-zA-Z]/;
+    
+            if (faSigns.test(text)) {
+                return "fa";
+            } else if (enSigns.test(text)) {
+                return "en";
+            } else {
+                return "en";
+            }
+        };
+    
+        const abbreviations = {
+            fa: [
+                "آقای\\.", "خانم\\.", "دکتر\\.", "مثلاً\\.", "جناب\\.", "استاد\\."
+            ],
+            en: [
+                "Mr\\.", "Mrs\\.", "Dr\\.", "etc\\.", "e\\.g\\.", "i\\.e\\."
+            ]
+        };
+    
+
+        const language = detectLanguage(text);
+    
+
+        const langAbbreviations = abbreviations[language] || [];
+        const abbreviationRegex = new RegExp(`(?:${langAbbreviations.join('|')})(\\s|$)`, "gi");
+    
+
+        const cleanedText = text.replace(abbreviationRegex, "");
+    
+
+        const sentenceRegex = /[.!؟!?]+(\s|$)/g;
+    
+
+        const matches = cleanedText.match(sentenceRegex);
+    
         return matches ? matches.length : 0;
     };
+    
+    
 
     const sentenceCount = countSentences(paragraph);
 
